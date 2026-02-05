@@ -1,4 +1,5 @@
 # reddit-summarizer
+Courtesy of Thomas Williams https://www.linkedin.com/in/thomas-williams-design/
 
 TL/DR: I built an app with Anthropic Claude Code that reads subreddits and emails me a daily digest. 
 
