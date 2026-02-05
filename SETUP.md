@@ -6,10 +6,11 @@ Complete guide to set up and deploy your Reddit Summarizer app with **Docker** a
 
 1. **Docker & Docker Compose** installed locally
 2. **uv** - Fast Python package installer ([Install](https://github.com/astral-sh/uv))
-3. **Reddit API** credentials
-4. **Anthropic API** key
-5. **Resend API** key (or verified domain)
-6. **Railway account** (for deployment)
+3. **Anthropic API** key (for AI summaries)
+4. **Resend API** key (for email delivery)
+5. **Railway account** (for deployment - optional)
+
+**No Reddit API credentials needed!** Uses public JSON endpoints.
 
 ## Quick Start with Docker (Recommended)
 
@@ -30,29 +31,14 @@ open http://localhost:8000
 
 That's it! The app is running with persistent storage.
 
-## Step 1: Reddit API Setup
-
-1. Go to https://www.reddit.com/prefs/apps
-2. Click "Create App" or "Create Another App"
-3. Fill in:
-   - **Name**: Reddit Summarizer
-   - **Type**: Select "script"
-   - **Description**: Daily Reddit digest
-   - **About URL**: (leave blank)
-   - **Redirect URI**: http://localhost:8000
-4. Click "Create App"
-5. Save your:
-   - **Client ID** (under app name)
-   - **Client Secret**
-
-## Step 2: Anthropic API Key
+## Step 1: Anthropic API Key
 
 1. Go to https://console.anthropic.com/
 2. Navigate to API Keys section
 3. Create a new API key
 4. Save the key securely
 
-## Step 3: Resend API Setup
+## Step 2: Resend API Setup
 
 1. Go to https://resend.com/
 2. Sign up for a free account
@@ -63,7 +49,7 @@ That's it! The app is running with persistent storage.
    self.from_email = "digest@yourdomain.com"  # Change to your verified domain
    ```
 
-## Step 4: Local Setup
+## Step 3: Local Setup
 
 ### Option A: Docker (Recommended)
 
@@ -79,18 +65,13 @@ That's it! The app is running with persistent storage.
 
 3. **Edit `.env` with your credentials**:
    ```env
-   REDDIT_CLIENT_ID=your_reddit_client_id
-   REDDIT_CLIENT_SECRET=your_reddit_client_secret
-   REDDIT_USER_AGENT=RedditSummarizer/1.0
-
+   # Only 3 required values!
    ANTHROPIC_API_KEY=your_anthropic_api_key
-
    RESEND_API_KEY=your_resend_api_key
-
    USER_EMAIL=your_email@example.com
 
+   # Optional configuration
    DATABASE_URL=sqlite:////data/reddit_summarizer.db
-
    DIGEST_TIME=06:00
    POSTS_PER_DIGEST=12
    ```
@@ -135,7 +116,7 @@ That's it! The app is running with persistent storage.
    uvicorn app.main:app --reload
    ```
 
-## Step 5: Configure Your Digest
+## Step 4: Configure Your Digest
 
 1. **Open dashboard**: http://localhost:8000
 
@@ -156,7 +137,7 @@ That's it! The app is running with persistent storage.
    - Click "👀 Generate & Send Preview" - see sample digest
    - Preview won't mark posts as sent
 
-## Step 6: Deploy to Railway
+## Step 5: Deploy to Railway
 
 ### Railway Setup
 
@@ -177,16 +158,18 @@ That's it! The app is running with persistent storage.
 In Railway dashboard, add these variables:
 
 ```
-REDDIT_CLIENT_ID=your_reddit_client_id
-REDDIT_CLIENT_SECRET=your_reddit_client_secret
-REDDIT_USER_AGENT=RedditSummarizer/1.0
+# Required
 ANTHROPIC_API_KEY=your_anthropic_api_key
 RESEND_API_KEY=your_resend_api_key
 USER_EMAIL=your_email@example.com
+
+# Optional
 DIGEST_TIME=06:00
 POSTS_PER_DIGEST=12
 DATABASE_URL=sqlite:////data/reddit_summarizer.db
 ```
+
+**Note:** No Reddit API credentials needed! The app uses Reddit's public JSON API.
 
 ### Add Persistent Volume (IMPORTANT!)
 

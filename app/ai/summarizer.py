@@ -18,8 +18,16 @@ class PostSummarizer:
     def _get_post_content(self, post: RankedPost) -> str:
         """Get full post content including top comments."""
         try:
-            # Get the actual Reddit post object
-            reddit_post = self.reddit_client.reddit.submission(id=post.post_id)
+            # Create a RedditPost object for fetching comments
+            from app.reddit.client import RedditPost
+            post_data = {
+                'id': post.post_id,
+                'permalink': post.url.replace('https://reddit.com', ''),
+                'title': post.title,
+                'selftext': post.selftext if hasattr(post, 'selftext') else '',
+                'is_self': post.is_self
+            }
+            reddit_post = RedditPost(post_data)
 
             # Build content string
             content = f"Title: {post.title}\n\n"

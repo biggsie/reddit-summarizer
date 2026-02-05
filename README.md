@@ -49,7 +49,8 @@ See demo vidoe for design and UI guidelines: https://drive.google.com/file/d/1x7
 
 ### Prerequisites
 - Docker & Docker Compose
-- API keys: Reddit, Anthropic, Resend
+- API keys: Anthropic (AI), Resend (email)
+- **No Reddit API key needed!**
 
 ### Run Locally
 
@@ -85,6 +86,7 @@ open http://localhost:8000
 
 ### Architecture
 - **Backend**: FastAPI with SQLAlchemy (SQLite/PostgreSQL)
+- **Reddit**: Public JSON API (no authentication needed)
 - **Dependency Management**: uv (10-100x faster than pip)
 - **Containerization**: Docker with multi-stage builds
 - **Scheduler**: APScheduler for automated digests
@@ -163,17 +165,17 @@ Using Makefile for convenience:
 
 ### Environment Variables
 
-Required:
-- `REDDIT_CLIENT_ID` - Reddit API credentials
-- `REDDIT_CLIENT_SECRET` - Reddit API secret
-- `ANTHROPIC_API_KEY` - Claude API key
-- `RESEND_API_KEY` - Email API key
+**Required (only 3!):**
+- `ANTHROPIC_API_KEY` - Claude API key for summaries
+- `RESEND_API_KEY` - Email API key for delivery
 - `USER_EMAIL` - Recipient email address
 
-Optional:
+**Optional:**
 - `DIGEST_TIME` - Send time (default: 06:00)
 - `POSTS_PER_DIGEST` - Number of posts (default: 12)
 - `DATABASE_URL` - Database connection string
+
+**No Reddit credentials needed!** Uses public JSON API.
 
 ### Deployment Notes
 
@@ -207,9 +209,10 @@ Check logs for:
 
 Common issues:
 1. **Email not sending**: Verify Resend domain and API key
-2. **No posts found**: Check subreddit names and thresholds
-3. **Scheduler not running**: Verify DIGEST_TIME format (HH:MM)
-4. **Database errors**: Ensure volume is mounted correctly
+2. **No posts found**: Check subreddit names (no "r/" prefix) and thresholds
+3. **Rate limiting**: Reddit's public API limits ~60 req/min (sufficient for daily digest)
+4. **Scheduler not running**: Verify DIGEST_TIME format (HH:MM)
+5. **Database errors**: Ensure volume is mounted correctly
 
 See [SETUP.md](SETUP.md) for detailed troubleshooting.
 

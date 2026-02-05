@@ -5,11 +5,6 @@ from functools import lru_cache
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
-    # Reddit API
-    reddit_client_id: str
-    reddit_client_secret: str
-    reddit_user_agent: str = "RedditSummarizer/1.0"
-
     # Anthropic API
     anthropic_api_key: str
 
