@@ -1,14 +1,34 @@
 # Reddit Summarizer - Setup Guide
 
-Complete guide to set up and deploy your Reddit Summarizer app.
+Complete guide to set up and deploy your Reddit Summarizer app with **Docker** and **uv**.
 
 ## Prerequisites
 
-1. **Python 3.11+** installed locally
-2. **Reddit API** credentials
-3. **Anthropic API** key
-4. **Resend API** key (or verified domain)
-5. **Railway account** (for deployment)
+1. **Docker & Docker Compose** installed locally
+2. **uv** - Fast Python package installer ([Install](https://github.com/astral-sh/uv))
+3. **Reddit API** credentials
+4. **Anthropic API** key
+5. **Resend API** key (or verified domain)
+6. **Railway account** (for deployment)
+
+## Quick Start with Docker (Recommended)
+
+```bash
+# 1. Clone and navigate
+cd reddit-summarizer
+
+# 2. Set up environment
+cp .env.example .env
+# Edit .env with your credentials
+
+# 3. Build and run with Docker Compose
+docker-compose up --build
+
+# 4. Open dashboard
+open http://localhost:8000
+```
+
+That's it! The app is running with persistent storage.
 
 ## Step 1: Reddit API Setup
 
@@ -45,28 +65,19 @@ Complete guide to set up and deploy your Reddit Summarizer app.
 
 ## Step 4: Local Setup
 
-1. **Clone and navigate to project**:
-   ```bash
-   cd reddit-summarizer
-   ```
+### Option A: Docker (Recommended)
 
-2. **Create virtual environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+1. **Install Docker**:
+   - Mac: [Docker Desktop](https://www.docker.com/products/docker-desktop)
+   - Linux: `sudo apt-get install docker.io docker-compose`
+   - Windows: [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Create `.env` file**:
+2. **Create `.env` file**:
    ```bash
    cp .env.example .env
    ```
 
-5. **Edit `.env` with your credentials**:
+3. **Edit `.env` with your credentials**:
    ```env
    REDDIT_CLIENT_ID=your_reddit_client_id
    REDDIT_CLIENT_SECRET=your_reddit_client_secret
@@ -78,154 +89,341 @@ Complete guide to set up and deploy your Reddit Summarizer app.
 
    USER_EMAIL=your_email@example.com
 
-   DATABASE_URL=sqlite:///./reddit_summarizer.db
+   DATABASE_URL=sqlite:////data/reddit_summarizer.db
 
    DIGEST_TIME=06:00
    POSTS_PER_DIGEST=12
    ```
 
-## Step 5: Run Locally
-
-1. **Start the application**:
+4. **Build and run**:
    ```bash
-   python -m app.main
+   # Build and start
+   docker-compose up --build
+
+   # Or run in background
+   docker-compose up -d
+
+   # View logs
+   docker-compose logs -f
+
+   # Stop
+   docker-compose down
    ```
 
-   Or with auto-reload:
+5. **Open dashboard**: http://localhost:8000
+
+### Option B: Local Python with uv
+
+1. **Install uv**:
+   ```bash
+   # Mac/Linux
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # Or with pip
+   pip install uv
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   uv pip install -r pyproject.toml
+   ```
+
+3. **Create `.env` file** (same as above)
+
+4. **Run**:
    ```bash
    uvicorn app.main:app --reload
    ```
 
-2. **Open dashboard**:
-   - Navigate to: http://localhost:8000
-   - You should see the dashboard interface
+## Step 5: Configure Your Digest
 
-3. **Configure your digest**:
-   - Add subreddits (e.g., "programming", "python", "technology")
-   - Update your email and preferences
-   - Click "Send Test Email" to verify email works
-   - Click "Generate & Send Preview" to see a sample digest
+1. **Open dashboard**: http://localhost:8000
+
+2. **Add subreddits**:
+   - Click on subreddit input
+   - Enter name (e.g., "programming", "python", "technology")
+   - Click "Add"
+   - Start with 3-5 subreddits
+
+3. **Update preferences**:
+   - Set your email address
+   - Choose digest time (24-hour format)
+   - Set posts per digest (5-20 recommended)
+   - Click "Save Preferences"
+
+4. **Test**:
+   - Click "📧 Send Test Email" - verify email works
+   - Click "👀 Generate & Send Preview" - see sample digest
+   - Preview won't mark posts as sent
 
 ## Step 6: Deploy to Railway
 
-1. **Install Railway CLI** (optional):
-   ```bash
-   npm install -g @railway/cli
-   ```
+### Railway Setup
 
-2. **Create Railway project**:
-   - Go to https://railway.app/
+1. **Create Railway account**: https://railway.app/
+
+2. **Create new project**:
    - Click "New Project"
    - Select "Deploy from GitHub repo"
-   - Connect your GitHub account and select the repository
+   - Connect your GitHub and select the repository
 
-3. **Set environment variables**:
-   - In Railway dashboard, go to your project
-   - Click on "Variables" tab
-   - Add all variables from your `.env` file:
-     - `REDDIT_CLIENT_ID`
-     - `REDDIT_CLIENT_SECRET`
-     - `REDDIT_USER_AGENT`
-     - `ANTHROPIC_API_KEY`
-     - `RESEND_API_KEY`
-     - `USER_EMAIL`
-     - `DIGEST_TIME`
-     - `POSTS_PER_DIGEST`
-     - `DATABASE_URL` (use: `sqlite:///./reddit_summarizer.db`)
+3. **Railway automatically detects Docker**:
+   - Sees `Dockerfile` and `railway.toml`
+   - Builds container automatically
+   - No additional configuration needed
 
-4. **Deploy**:
-   - Railway will automatically detect the `Procfile`
-   - Your app will deploy automatically
-   - You'll get a public URL (e.g., `your-app.up.railway.app`)
+### Configure Environment Variables
 
-5. **Update Resend domain** (if using custom domain):
-   - Update the sender email in Railway environment variables
+In Railway dashboard, add these variables:
 
-## Step 7: Verify Deployment
+```
+REDDIT_CLIENT_ID=your_reddit_client_id
+REDDIT_CLIENT_SECRET=your_reddit_client_secret
+REDDIT_USER_AGENT=RedditSummarizer/1.0
+ANTHROPIC_API_KEY=your_anthropic_api_key
+RESEND_API_KEY=your_resend_api_key
+USER_EMAIL=your_email@example.com
+DIGEST_TIME=06:00
+POSTS_PER_DIGEST=12
+DATABASE_URL=sqlite:////data/reddit_summarizer.db
+```
 
-1. Visit your Railway URL
-2. Test the dashboard
-3. Send a test email
-4. Generate a preview digest
+### Add Persistent Volume (IMPORTANT!)
+
+Railway provides persistent volumes for Docker containers:
+
+1. Go to your Railway project
+2. Click on your service
+3. Go to "Volumes" tab
+4. Click "Add Volume"
+5. Configure:
+   - **Mount Path**: `/data`
+   - **Name**: `reddit-data` (or any name)
+6. Save
+
+This ensures your SQLite database persists across deployments.
+
+### Deploy
+
+1. Railway auto-deploys on git push
+2. Or manually trigger from Railway dashboard
+3. You'll get a public URL (e.g., `your-app.up.railway.app`)
+
+### Update Resend Email Address
+
+If using custom domain, update `app/email/sender.py` before deploying:
+```python
+self.from_email = "digest@yourdomain.com"
+```
+
+## Docker Commands Reference
+
+```bash
+# Build image
+docker build -t reddit-summarizer .
+
+# Run container
+docker run -p 8000:8000 --env-file .env reddit-summarizer
+
+# Run with volume
+docker run -p 8000:8000 --env-file .env -v reddit-data:/data reddit-summarizer
+
+# Using Docker Compose (recommended)
+docker-compose up --build        # Build and start
+docker-compose up -d             # Start in background
+docker-compose down              # Stop
+docker-compose logs -f           # View logs
+docker-compose restart           # Restart services
+
+# Access container shell
+docker-compose exec app sh
+
+# View database
+docker-compose exec app ls -la /data
+```
 
 ## Monitoring & Maintenance
 
 ### Check Logs
 
+**Docker Compose (local)**:
+```bash
+docker-compose logs -f
+```
+
 **Railway**:
-- Go to your project → Deployments → View logs
+- Go to project → Deployments → View logs
 - Look for "Digest sent successfully" messages
 
-### Update Scheduler
+### Database Access
 
-The app automatically sends digests at your configured time. To change:
-1. Update `DIGEST_TIME` environment variable in Railway
-2. Restart the deployment
+**Local (Docker)**:
+```bash
+# Access container
+docker-compose exec app sh
 
-### Database Backup
+# View database file
+ls -la /data/reddit_summarizer.db
 
-SQLite database is stored in the container. For production:
-- Consider using Railway's PostgreSQL addon
-- Update `DATABASE_URL` to use PostgreSQL
-- Modify `requirements.txt` to include `psycopg2-binary`
+# Or mount and use sqlite3
+docker-compose exec app sqlite3 /data/reddit_summarizer.db
+```
 
-### Cost Optimization
+### Update Scheduler Time
 
-- **Claude Haiku**: ~$0.012 per digest
-- **Resend**: Free tier (3,000 emails/month)
-- **Railway**: Free tier ($5 credit/month)
-- **Total**: ~$0.37/month for daily digests
+1. Update `DIGEST_TIME` environment variable
+2. Restart:
+   - **Local**: `docker-compose restart`
+   - **Railway**: Redeploy or restart service
+
+### Backup Database
+
+**Local**:
+```bash
+docker cp $(docker-compose ps -q app):/data/reddit_summarizer.db ./backup.db
+```
+
+**Railway**:
+- Railway volumes persist automatically
+- Consider periodic backups via Railway CLI
+- For production, consider migrating to PostgreSQL
+
+## Migrating to PostgreSQL (Optional)
+
+For better production reliability:
+
+1. **Add to Railway**:
+   - Click "New" → "Database" → "PostgreSQL"
+   - Railway provides connection string
+
+2. **Update dependencies** in `pyproject.toml`:
+   ```toml
+   dependencies = [
+       # ... existing deps ...
+       "psycopg2-binary==2.9.9",
+   ]
+   ```
+
+3. **Update `DATABASE_URL`** in Railway:
+   ```
+   DATABASE_URL=postgresql://user:pass@host:5432/db
+   ```
+
+4. **Rebuild and deploy**:
+   ```bash
+   git add pyproject.toml
+   git commit -m "Add PostgreSQL support"
+   git push
+   ```
+
+## Cost Breakdown
+
+### Development
+- **Docker**: Free (local)
+- **uv**: Free
+- **API Testing**: ~$0.15-0.25
+
+### Monthly Operation
+- **Claude Haiku**: ~$0.012/digest × 30 = $0.36
+- **Resend**: Free (3,000 emails/month)
+- **Railway**:
+  - Free tier: $5 credit/month (sufficient)
+  - OR $5/month for hobby plan (500 hours)
+- **Total**: ~$0.36-$5.36/month
 
 ## Troubleshooting
 
+### Docker Issues
+
+**Build fails**:
+```bash
+# Clear cache and rebuild
+docker-compose build --no-cache
+```
+
+**Port already in use**:
+```bash
+# Change port in docker-compose.yml
+ports:
+  - "8001:8000"  # Use 8001 instead
+```
+
+**Volume permissions**:
+```bash
+# Check volume
+docker volume inspect reddit-summarizer_reddit-data
+
+# Remove and recreate
+docker-compose down -v
+docker-compose up --build
+```
+
 ### Email Not Sending
 
-1. Check Resend API key is correct
-2. Verify domain is validated in Resend dashboard
-3. Check Railway logs for errors
-4. Try sending a test email from dashboard
+1. Verify Resend API key
+2. Check domain is verified
+3. View logs: `docker-compose logs -f`
+4. Test email from dashboard
 
 ### No Posts Found
 
-1. Verify subreddit names are correct (no "r/" prefix needed)
-2. Check min_upvotes and min_comments thresholds
+1. Check subreddit names (no "r/" prefix)
+2. Verify min thresholds aren't too high
 3. Enable more subreddits
-4. Check Reddit API credentials
+4. Check Reddit API credentials in logs
 
 ### Scheduler Not Running
 
-1. Verify Railway deployment is not sleeping (use web endpoint)
-2. Check `DIGEST_TIME` format (HH:MM)
-3. Review Railway logs for scheduler errors
-4. Consider Railway's cron jobs for guaranteed execution
+1. Check logs for scheduler startup: "Scheduler started"
+2. Verify `DIGEST_TIME` format (HH:MM)
+3. Check timezone (container uses UTC by default)
+4. Consider Railway cron for guaranteed execution
 
-### Database Issues
+## Development Workflow
 
-1. Check `DATABASE_URL` is set correctly
-2. Verify write permissions
-3. Consider switching to PostgreSQL for production
+### Local Development with Hot Reload
+
+```bash
+# Edit code
+# Docker Compose auto-reloads on changes (volumes mounted)
+docker-compose logs -f  # Watch logs
+
+# Or run without Docker for faster iteration
+uv pip install -r pyproject.toml
+uvicorn app.main:app --reload
+```
+
+### Testing Changes
+
+```bash
+# Rebuild after dependency changes
+docker-compose up --build
+
+# Test specific component
+docker-compose exec app python -c "from app.reddit.client import RedditClient; print('OK')"
+```
+
+### Deploying Updates
+
+```bash
+git add .
+git commit -m "Your changes"
+git push origin main
+
+# Railway auto-deploys on push
+```
 
 ## Advanced Configuration
-
-### Using PostgreSQL on Railway
-
-1. Add PostgreSQL plugin in Railway
-2. Update `requirements.txt`:
-   ```
-   psycopg2-binary==2.9.9
-   ```
-3. Update `DATABASE_URL` to use the PostgreSQL connection string
-4. Redeploy
 
 ### Custom Email Templates
 
 Edit `app/email/templates.py` to customize:
-- Email styling
-- Layout
-- Colors
+- HTML structure
+- Styling and colors
+- Layout and spacing
 - Footer content
 
-### Adjusting Ranking Algorithm
+### Ranking Algorithm Tuning
 
 Modify weights in `app/reddit/ranking.py`:
 ```python
@@ -233,24 +431,44 @@ weights = {
     'velocity': 0.25,      # Trending content
     'engagement': 0.20,    # Discussion quality
     'approval': 0.20,      # Community approval
-    'percentile': 0.15,    # Popularity ranking
+    'percentile': 0.15,    # Popularity
     'title': 0.10,         # Title quality
     'content': 0.10        # Content type
 }
 ```
 
-## Support
+### Using Railway Cron (Alternative to APScheduler)
 
-For issues:
-1. Check Railway logs
-2. Test locally first
-3. Verify all API keys are valid
-4. Review error messages in browser console
+For guaranteed execution, use Railway's cron jobs:
+
+1. Create separate cron service in Railway
+2. Configure schedule
+3. Call your `/api/send-digest` endpoint
+
+## Security Best Practices
+
+1. **Never commit `.env`** - already in `.gitignore`
+2. **Use Railway secrets** for production
+3. **Rotate API keys** periodically
+4. **Enable HTTPS** (Railway provides automatically)
+5. **Review logs** for suspicious activity
+
+## Support & Resources
+
+- **Railway Docs**: https://docs.railway.app/
+- **uv Docs**: https://github.com/astral-sh/uv
+- **Docker Docs**: https://docs.docker.com/
+- **FastAPI Docs**: https://fastapi.tiangolo.com/
 
 ## Next Steps
 
-- Add more subreddits
-- Adjust post count and timing
-- Customize email template styling
-- Monitor costs and optimize
-- Consider adding webhook notifications
+✅ Deploy to Railway
+✅ Add your favorite subreddits
+✅ Send test digest
+✅ Enjoy your daily summaries!
+
+Consider:
+- Adding webhook notifications
+- Creating weekly recap digest
+- Building mobile app interface
+- Implementing user authentication for multi-user support

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # Mount database volume for persistence
+      - reddit-data:/data
+      # Mount code for development (hot reload)
+      - ./app:/app/app
+      - ./templates:/app/templates
+    environment:
+      - DATABASE_URL=sqlite:////data/reddit_summarizer.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  reddit-data:
+    driver: local
