@@ -14,7 +14,6 @@ After disconnecting from social over the holiday break, I found I was missing a 
 
 The app sends the digest at 6:00am every morning with 10–12 posts. All up (not including my Claude subscription) it costs ~$0.37/month to run. It took me around 8 hours total and I didn't use any design tools.
 
-
 Stack:
 Python/FastAPI (backend + dashboard)
 Anthropic Claude Haiku (AI summaries)
@@ -41,3 +40,5 @@ Costs:
 Claude Haiku: ~$0.012 per digest
 Monthly: ~$0.37 for daily AI summaries
 Everything else on free tier 
+
+See demo vidoe for design and UI guidelines: https://drive.google.com/file/d/1x7T3QzdkY4tAggwvNv_Wv0MRTy6OmKI_/view?usp=sharing
