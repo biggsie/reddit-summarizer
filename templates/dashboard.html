@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Reddit Summarizer Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Reddit Summarizer</h1>
+            <p class="subtitle">Manage your daily digest preferences</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="grid">
+            <!-- Subreddits Section -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Subreddits</h2>
+                    </div>
+
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            id="subreddit-input"
+                            class="input"
+                            placeholder="Enter subreddit name (e.g., programming)"
+                        />
+                        <button class="btn btn-primary" onclick="addSubreddit()">
+                            Add
+                        </button>
+                    </div>
+
+                    <ul id="subreddit-list" class="subreddit-list">
+                        <!-- Populated by JavaScript -->
+                    </ul>
+                </div>
+
+                <!-- Preferences Section -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h2 class="card-title">Preferences</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email-input">Email Address</label>
+                        <input
+                            type="email"
+                            id="email-input"
+                            class="input"
+                            placeholder="your@email.com"
+                        />
+                        <p class="form-help">Where to send your daily digest</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="digest-time">Digest Time</label>
+                        <input
+                            type="time"
+                            id="digest-time"
+                            class="input"
+                        />
+                        <p class="form-help">Daily send time (server timezone)</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="posts-count">Posts Per Digest</label>
+                        <input
+                            type="number"
+                            id="posts-count"
+                            class="input"
+                            min="5"
+                            max="20"
+                            value="12"
+                        />
+                        <p class="form-help">Number of posts to include (5-20)</p>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="savePreferences()">
+                        Save Preferences
+                    </button>
+                </div>
+            </div>
+
+            <!-- Actions Section -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Actions</h2>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="sendTestEmail()">
+                            📧 Send Test Email
+                        </button>
+
+                        <button class="btn btn-secondary" onclick="generatePreview()">
+                            👀 Generate & Send Preview
+                        </button>
+
+                        <button class="btn btn-primary" onclick="sendDigestNow()">
+                            🚀 Send Digest Now
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">
+                            ℹ️ Information
+                        </h3>
+                        <ul style="font-size: 13px; color: var(--text-secondary); padding-left: 20px;">
+                            <li style="margin-bottom: 8px;">
+                                <strong>Test Email:</strong> Verify email configuration
+                            </li>
+                            <li style="margin-bottom: 8px;">
+                                <strong>Preview:</strong> See digest without marking posts as sent
+                            </li>
+                            <li style="margin-bottom: 8px;">
+                                <strong>Send Now:</strong> Send actual digest and mark posts as sent
+                            </li>
+                            <li>
+                                Automatic digests are sent daily at your configured time
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h2 class="card-title">💡 Tips</h2>
+                    </div>
+
+                    <ul style="font-size: 13px; color: var(--text-secondary); padding-left: 20px;">
+                        <li style="margin-bottom: 8px;">
+                            Start with 3-5 subreddits for best results
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            Disable subreddits temporarily instead of deleting
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            Use preview to test before changing settings
+                        </li>
+                        <li>
+                            Posts are ranked by quality, not just popularity
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
