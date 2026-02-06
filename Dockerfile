@@ -37,5 +37,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
 
 # Run the application
-# Use shell form to expand $PORT environment variable
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Use Python's __main__ to handle PORT env var reading
+CMD ["python", "-m", "app.main"]
