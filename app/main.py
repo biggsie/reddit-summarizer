@@ -8,6 +8,8 @@ from app.api.scheduler import start_scheduler
 from app.database import init_db
 import logging
 
+# Reddit Summarizer - Daily digest with AI summaries
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
